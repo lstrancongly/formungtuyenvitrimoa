@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Ứng Tuyển Prudential Chuẩn - Google AI Studio</title>
+    <title>Form Ứng Tuyển Prudential - Xuất PDF Chuẩn</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
@@ -12,15 +12,13 @@
         .container { max-width: 850px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         h2 { color: #d32f2f; text-align: center; margin-bottom: 5px; }
         
-        /* Bộ điều khiển AI */
-        .ai-panel { background-color: #e3f2fd; border: 2px dashed #1e88e5; padding: 20px; margin-bottom: 25px; border-radius: 6px; }
-        
-        /* Cấu trúc thiết kế Form */
+        /* Cấu trúc phần đầu trang (Ảnh + Tiêu đề) */
         .header-table { width: 100%; margin-bottom: 20px; border: none !important; }
         .header-table td { border: none !important; padding: 10px; }
         .avatar-box { width: 120px; height: 160px; border: 2px dashed #ccc; text-align: center; vertical-align: middle; font-size: 12px; color: #666; background-color: #fafafa; }
         
-        .section-title { background-color: #d32f2f; color: white; padding: 6px 10px; margin-top: 20px; margin-bottom: 12px; font-weight: bold; text-transform: uppercase; font-size: 13px; }
+        /* Tiêu đề phân mục lớn */
+        .section-title { background-color: #d32f2f; color: white; padding: 6px 10px; margin-top: 25px; margin-bottom: 15px; font-weight: bold; text-transform: uppercase; font-size: 13px; }
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 12px; }
         
@@ -28,20 +26,21 @@
         .row { display: flex; gap: 15px; }
         .col { flex: 1; }
         
-        /* Bảng hiển thị thông tin */
+        /* Định dạng bảng cho Kinh nghiệm, Người thân */
         table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
         table, th, td { border: 1px solid #ccc; }
         th { background-color: #f2f2f2; padding: 6px; font-size: 12px; text-align: center; font-weight: bold; }
         td { padding: 0; }
-        td input { border: none !important; width: 100%; padding: 6px; box-sizing: border-box; }
+        td input { border: none !important; width: 100%; padding: 8px; box-sizing: border-box; }
         td input:focus { outline: none; background-color: #fffde7; }
         
-        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-ai { background-color: #1e88e5; color: white; margin-top: 10px; }
-        .btn-pdf { background-color: #4CAF50; color: white; font-size: 16px; width: 100%; padding: 14px; margin-top: 25px; }
+        /* Thiết kế nút bấm xuất PDF */
+        .btn-pdf { background-color: #4CAF50; color: white; font-size: 16px; width: 100%; padding: 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 25px; }
+        .btn-pdf:hover { background-color: #45a049; }
         
+        /* Quy tắc ẩn các nút điều hướng lựa chọn khi chụp ảnh PDF */
         @media print {
-            .ai-panel, .btn-pdf { display: none !important; }
+            .btn-pdf, #avatarUpload { display: none !important; }
             body { background: none; margin: 0; }
             .container { box-shadow: none; padding: 0; }
         }
@@ -50,17 +49,6 @@
 <body>
 
 <div class="container">
-
-    <div class="ai-panel">
-        <h3 style="color: #1e88e5; margin-top:0;">🪄 Trợ Lý Phân Tích CV (Google AI Studio)</h3>
-        <textarea id="aiRawInput" rows="5" placeholder="Dán văn bản CV thô của ứng viên vào đây..."></textarea>
-        <div style="margin-top: 10px;">
-            <label style="display:inline-block; margin-right: 10px;">API Key Google AI:</label>
-            <input type="text" id="aiApiKey" style="width: 250px; display: inline-block;" placeholder="AIzaSy...">
-            <button class="btn btn-ai" onclick="fillFormWithAI()">Phân tích & Điền tự động</button>
-            <span id="aiStatus" style="margin-left: 15px; font-weight: bold; font-size: 13px;"></span>
-        </div>
-    </div>
 
     <div id="formContent">
         
@@ -73,53 +61,53 @@
                 <td style="vertical-align: middle; text-align: center;">
                     <h2>THÔNG TIN ỨNG TUYỂN</h2>
                     <p style="font-weight: bold; margin: 5px 0; font-size: 14px;">QUẢN LÝ TƯ VẤN VIÊN TRỰC TIẾP RED+</p>
-                    <p style="color: red; font-size: 12px; font-style: italic; margin: 0;">* Đây là các thông tin bắt buộc, vui lòng điền đầy đủ thông tin</p>
+                    <p style="color: red; font-size: 11px; font-style: italic; margin: 0;">* Đây là các thông tin bắt buộc, vui lòng điền đầy đủ thông tin</p>
                 </td>
             </tr>
         </table>
 
         <div class="form-group" style="border: 1px solid #ccc; padding: 10px; background-color: #fafafa;">
             <label>* Khu vực ứng tuyển (vui lòng đánh dấu vào ô tương ứng):</label>
-            <input type="radio" name="khu_vuc" id="kv_hn" value="Hà Nội"> Hà Nội &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="radio" name="khu_vuc" id="kv_hcm" value="Hồ Chí Minh"> Hồ Chí Minh
+            <input type="radio" name="khu_vuc" value="Hà Nội"> Hà Nội &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="radio" name="khu_vuc" value="Hồ Chí Minh"> Hồ Chí Minh
         </div>
 
         <div class="section-title">* THÔNG TIN CÁ NHÂN</div>
         <div class="row">
-            <div class="col form-group"><label>* Họ và tên:</label><input type="text" id="fullname"></div>
-            <div class="col form-group"><label>* Nơi sinh:</label><input type="text" id="pob"></div>
-            <div class="col form-group"><label>* Ngày tháng năm sinh:</label><input type="date" id="dob"></div>
-            <div class="col form-group"><label>* Giới tính:</label><select id="gender"><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select></div>
+            <div class="col form-group"><label>* Họ và tên:</label><input type="text"></div>
+            <div class="col form-group"><label>* Nơi sinh:</label><input type="text"></div>
+            <div class="col form-group"><label>* Ngày tháng năm sinh:</label><input type="date"></div>
+            <div class="col form-group"><label>* Giới tính:</label><select><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select></div>
         </div>
         
-        <div class="form-group"><label>* Nơi đăng ký hộ khẩu thường trú:</label><input type="text" id="hktt"></div>
-        <div class="form-group"><label>* Nơi ở hiện nay:</label><input type="text" id="address"></div>
+        <div class="form-group"><label>* Nơi đăng ký hộ khẩu thường trú:</label><input type="text"></div>
+        <div class="form-group"><label>* Nơi ở hiện nay:</label><input type="text"></div>
 
         <div class="row">
-            <div class="col form-group"><label>* Số CCCD:</label><input type="text" id="cccd"></div>
-            <div class="col form-group"><label>* Nơi cấp:</label><input type="text" id="cccd_place"></div>
-            <div class="col form-group"><label>* Ngày cấp:</label><input type="date" id="cccd_date"></div>
-            <div class="col form-group"><label>* Tình trạng hôn nhân:</label><input type="text" id="marital_status"></div>
+            <div class="col form-group"><label>* Số CCCD:</label><input type="text"></div>
+            <div class="col form-group"><label>* Nơi cấp:</label><input type="text"></div>
+            <div class="col form-group"><label>* Ngày cấp:</label><input type="date"></div>
+            <div class="col form-group"><label>* Tình trạng hôn nhân:</label><input type="text"></div>
         </div>
 
         <div class="row">
-            <div class="col form-group"><label>* Email:</label><input type="email" id="email"></div>
-            <div class="col form-group"><label>* Điện thoại di động:</label><input type="text" id="phone"></div>
+            <div class="col form-group"><label>* Email:</label><input type="email"></div>
+            <div class="col form-group"><label>* Điện thoại di động:</label><input type="text"></div>
         </div>
 
         <div class="row">
-            <div class="col form-group"><label>* Người liên hệ trong trường hợp khẩn cấp:</label><input type="text" id="emergency_name"></div>
-            <div class="col form-group"><label>* Điện thoại di động:</label><input type="text" id="emergency_phone"></div>
-            <div class="col form-group"><label>* Mối quan hệ:</label><input type="text" id="emergency_relation"></div>
+            <div class="col form-group"><label>* Người liên hệ trong trường hợp khẩn cấp:</label><input type="text"></div>
+            <div class="col form-group"><label>* Điện thoại di động:</label><input type="text"></div>
+            <div class="col form-group"><label>* Mối quan hệ:</label><input type="text"></div>
         </div>
-        <div class="form-group"><label>* Địa chỉ liên lạc của người khẩn cấp:</label><input type="text" id="emergency_address"></div>
+        <div class="form-group"><label>* Địa chỉ liên lạc:</label><input type="text"></div>
 
         <div class="section-title">* THÔNG TIN HỌC VẤN (VUI LÒNG ĐIỀN CẤP BẬC CAO NHẤT)</div>
         <div class="row">
-            <div class="col form-group"><label>* Trình độ:</label><input type="text" id="edu_level"></div>
-            <div class="col form-group"><label>* Tên trường đào tạo:</label><input type="text" id="edu_school"></div>
-            <div class="col form-group"><label>* Ngành học:</label><input type="text" id="edu_major"></div>
-            <div class="col form-group"><label>* Thời gian:</label><input type="text" id="edu_time"></div>
+            <div class="col form-group"><label>* Trình độ:</label><input type="text"></div>
+            <div class="col form-group"><label>* Tên trường đào tạo:</label><input type="text"></div>
+            <div class="col form-group"><label>* Ngành học:</label><input type="text"></div>
+            <div class="col form-group"><label>* Thời gian:</label><input type="text"></div>
         </div>
 
         <div class="section-title">* KINH NGHIỆM LÀM VIỆC (VUI LÒNG ĐIỀN THÔNG TIN 3 CÔNG VIỆC GẦN NHẤT)</div>
@@ -134,55 +122,70 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td><input type="text" id="exp_time_1"></td><td><input type="text" id="exp_company_1"></td><td><input type="text" id="exp_position_1"></td><td><input type="text" id="exp_task_1"></td><td><input type="text" id="exp_salary_1"></td></tr>
-                <tr><td><input type="text" id="exp_time_2"></td><td><input type="text" id="exp_company_2"></td><td><input type="text" id="exp_position_2"></td><td><input type="text" id="exp_task_2"></td><td><input type="text" id="exp_salary_2"></td></tr>
-                <tr><td><input type="text" id="exp_time_3"></td><td><input type="text" id="exp_company_3"></td><td><input type="text" id="exp_position_3"></td><td><input type="text" id="exp_task_3"></td><td><input type="text" id="exp_salary_3"></td></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
             </tbody>
         </table>
 
         <div class="section-title">* ANH/CHỊ BIẾT THÔNG TIN TUYỂN DỤNG NÀY THÔNG QUA</div>
-        <div class="form-group" style="padding: 5px;">
-            <input type="checkbox" id="src_web"> Website Prudential &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" id="src_fb"> Facebook &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" id="src_li"> LinkedIn &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" id="src_rel"> Người thân/Bạn bè &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" id="src_other"> Khác
+        <div class="form-group" style="padding: 5px; border: 1px solid #eee;">
+            <input type="checkbox"> Website Prudential &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox"> Facebook &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox"> LinkedIn &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox"> Người thân/Bạn bè &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox"> Khác
         </div>
 
         <div class="section-title">ANH/CHỊ VUI LÒNG CHO BIẾT NGƯỜI THÂN, BẠN BÈ HIỆN ĐANG LÀM VIỆC TẠI PRUDENTIAL (NẾU CÓ)</div>
         <table>
             <thead>
-                <tr><th>Họ tên</th><th>Vị trí</th><th>Phòng ban</th><th>Mối quan hệ</th><th>Số điện thoại</th></tr>
+                <tr>
+                    <th>Họ tên</th>
+                    <th>Vị trí</th>
+                    <th>Phòng ban</th>
+                    <th>Mối quan hệ</th>
+                    <th>Số điện thoại</th>
+                </tr>
             </thead>
             <tbody>
-                <tr><td><input type="text" id="rel_name_1"></td><td><input type="text" id="rel_pos_1"></td><td><input type="text" id="rel_dept_1"></td><td><input type="text" id="rel_relation_1"></td><td><input type="text" id="rel_phone_1"></td></tr>
-                <tr><td><input type="text" id="rel_name_2"></td><td><input type="text" id="rel_pos_2"></td><td><input type="text" id="rel_dept_2"></td><td><input type="text" id="rel_relation_2"></td><td><input type="text" id="rel_phone_2"></td></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
             </tbody>
         </table>
 
         <div class="section-title">* THÔNG TIN THÊM</div>
         <div class="form-group">
             <label>Anh/Chị đã từng làm việc tại Prudential trước đây chưa?</label>
-            <input type="radio" name="worked_before" id="worked_no" value="Chưa"> Chưa &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="radio" name="worked_before" id="worked_yes" value="Có"> Có
+            <input type="radio" name="worked_before" value="Chưa"> Chưa &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="radio" name="worked_before" value="Có"> Có
             <div style="margin-top: 8px;">
-                <label>Nếu có, vui lòng điền thông tin chi tiết (Vị trí, thời gian làm việc):</label>
-                <input type="text" id="worked_details">
+                <label>If yes, please provide details (Position, employment period) / Nếu có, vui lòng điền thông tin chi tiết: Vị trí, thời gian làm việc:</label>
+                <input type="text">
             </div>
         </div>
 
-        <div style="margin-top: 25px; font-size: 11px; text-align: justify; line-height: 1.5; border-top: 1px dashed #ccc; padding-top: 15px;">
-            <input type="checkbox" id="chk_agree" checked>
-            Tôi xin cam đoan những thông tin cung cấp trên đây là chính xác và đầy đủ. Bằng việc đánh dấu vào ô ngay cạnh bên, Tôi xác nhận đã đọc, hiểu và biết rõ <strong>Chính Sách Bảo Mật Thông Tin</strong> của Prudential được quy định tại website và đồng ý việc xử lý dữ liệu cho mục đích tuyển dụng.
-            <div style="text-align: right; margin-top: 15px; font-weight: bold; margin-right: 40px;">ỨNG VIÊN<br><span style="font-weight:normal; font-style:italic;">(Ký và ghi rõ họ tên)</span></div>
+        <div style="margin-top: 30px; font-size: 11px; text-align: justify; line-height: 1.6; border-top: 1px dashed #ccc; padding-top: 15px;">
+            <input type="checkbox" checked>
+            Tôi xin cam đoan những thông tin cung cấp trên đây là chính xác và đầy đủ. Bằng việc đánh dấu vào ô ngay cạnh bên, Tôi xác nhận đã đọc, hiểu và biết rõ <strong>Chính Sách Bảo Mật Thông Tin</strong> của Prudential được quy định tại website và đồng ý việc xử lý dữ liệu của Prudential cho mục đích thẩm định, đánh giá tư cách, điều kiện và tuyển dụng đại lý bảo hiểm như quy định chi tiết.
+            
+            <table style="width: 100%; border: none !important; margin-top: 25px;">
+                <tr style="border: none !important;">
+                    <td style="border: none !important; width: 60%;"></td>
+                    <td style="border: none !important; text-align: center; font-weight: bold; font-size: 13px;">
+                        ỨNG VIÊN<br>
+                        <span style="font-weight: normal; font-style: italic; font-size: 12px;">(Ký và ghi rõ họ tên)</span>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 
-    <button class="btn btn-pdf" onclick="exportPDF()">XUẤT FILE PDF ỨNG TUYỂN</button>
+    <button class="btn-pdf" onclick="exportPDF()">XUẤT FILE PDF ỨNG TUYỂN</button>
 </div>
 
 <script>
-// Xử lý xem trước ảnh khi upload
+// Xử lý đọc và hiện ảnh chân dung ngay trên form khi chọn tệp
 function previewImage(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -193,126 +196,25 @@ function previewImage(input) {
     }
 }
 
-async function fillFormWithAI() {
-    const rawText = document.getElementById('aiRawInput').value;
-    const apiKey = document.getElementById('aiApiKey').value.trim();
-    const status = document.getElementById('aiStatus');
-
-    if (!rawText.trim() || !apiKey) return alert("Vui lòng nhập đầy đủ văn bản thô và API Key!");
-
-    status.style.color = "#1e88e5";
-    status.innerText = "⏳ AI đang xử lý...";
-
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-    const instruction = `Phân tích văn bản ứng viên và xuất JSON khớp cấu trúc sau (không kèm markdown):
-    {
-        "khu_vuc": "Hà Nội" hoặc "Hồ Chí Minh",
-        "fullname": "", "dob": "YYYY-MM-DD", "pob": "", "gender": "Nam/Nữ",
-        "hktt": "", "address": "", "cccd": "", "cccd_date": "YYYY-MM-DD", "cccd_place": "", "marital_status": "",
-        "email": "", "phone": "",
-        "emergency_name": "", "emergency_phone": "", "emergency_relation": "", "emergency_address": "",
-        "edu_level": "", "edu_school": "", "edu_major": "", "edu_time": "",
-        "experiences": [{"time": "", "company": "", "position": "", "task": "", "salary": ""}],
-        "source": "Website/Facebook/LinkedIn/Friends/Other",
-        "relatives": [{"name": "", "position": "", "dept": "", "relation": "", "phone": ""}],
-        "worked_before": "Chưa/Có", "worked_details": ""
-    }`;
-
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: instruction + "\n\nVăn bản:\n" + rawText }] }],
-                generationConfig: { responseMimeType: "application/json" }
-            })
-        });
-
-        const data = await response.json();
-        const res = JSON.parse(data.candidates[0].content.parts[0].text);
-
-        // Ánh xạ dữ liệu vào form HTML
-        if(res.khu_vuc === "Hà Nội") document.getElementById('kv_hn').checked = true;
-        if(res.khu_vuc === "Hồ Chí Minh") document.getElementById('kv_hcm').checked = true;
-        
-        document.getElementById('fullname').value = res.fullname || '';
-        document.getElementById('dob').value = res.dob || '';
-        document.getElementById('pob').value = res.pob || '';
-        document.getElementById('gender').value = res.gender || 'Nam';
-        document.getElementById('hktt').value = res.hktt || '';
-        document.getElementById('address').value = res.address || '';
-        document.getElementById('cccd').value = res.cccd || '';
-        document.getElementById('cccd_date').value = res.cccd_date || '';
-        document.getElementById('cccd_place').value = res.cccd_place || '';
-        document.getElementById('marital_status').value = res.marital_status || '';
-        document.getElementById('email').value = res.email || '';
-        document.getElementById('phone').value = res.phone || '';
-        
-        document.getElementById('emergency_name').value = res.emergency_name || '';
-        document.getElementById('emergency_phone').value = res.emergency_phone || '';
-        document.getElementById('emergency_relation').value = res.emergency_relation || '';
-        document.getElementById('emergency_address').value = res.emergency_address || '';
-
-        document.getElementById('edu_level').value = res.edu_level || '';
-        document.getElementById('edu_school').value = res.edu_school || '';
-        document.getElementById('edu_major').value = res.edu_major || '';
-        document.getElementById('edu_time').value = res.edu_time || '';
-
-        // Đổ bảng kinh nghiệm (Tối đa 3 dòng)
-        if(res.experiences) {
-            for(let i=0; i<Math.min(res.experiences.length, 3); i++) {
-                document.getElementById(`exp_time_${i+1}`).value = res.experiences[i].time || '';
-                document.getElementById(`exp_company_${i+1}`).value = res.experiences[i].company || '';
-                document.getElementById(`exp_position_${i+1}`).value = res.experiences[i].position || '';
-                document.getElementById(`exp_task_${i+1}`).value = res.experiences[i].task || '';
-                document.getElementById(`exp_salary_${i+1}`).value = res.experiences[i].salary || '';
-            }
-        }
-
-        // Đổ nguồn thông tin tuyển dụng
-        if(res.source === "Website") document.getElementById('src_web').checked = true;
-        if(res.source === "Facebook") document.getElementById('src_fb').checked = true;
-        if(res.source === "LinkedIn") document.getElementById('src_li').checked = true;
-        if(res.source === "Friends") document.getElementById('src_rel').checked = true;
-        if(res.source === "Other") document.getElementById('src_other').checked = true;
-
-        // Đổ bảng người thân (Tối đa 2 dòng)
-        if(res.relatives) {
-            for(let i=0; i<Math.min(res.relatives.length, 2); i++) {
-                document.getElementById(`rel_name_${i+1}`).value = res.relatives[i].name || '';
-                document.getElementById(`rel_pos_${i+1}`).value = res.relatives[i].position || '';
-                document.getElementById(`rel_dept_${i+1}`).value = res.relatives[i].dept || '';
-                document.getElementById(`rel_relation_${i+1}`).value = res.relatives[i].relation || '';
-                document.getElementById(`rel_phone_${i+1}`).value = res.relatives[i].phone || '';
-            }
-        }
-
-        if(res.worked_before === "Có") document.getElementById('worked_yes').checked = true;
-        else document.getElementById('worked_no').checked = true;
-        document.getElementById('worked_details').value = res.worked_details || '';
-
-        status.style.color = "#28a745"; status.innerText = "✅ Thành công!";
-    } catch (e) {
-        console.error(e); status.style.color = "#d32f2f"; status.innerText = "❌ Lỗi trích xuất!";
-    }
-}
-
+// Hàm xử lý xuất file PDF chuẩn A4
 function exportPDF() {
-    // Ẩn tạm thời nút input chọn ảnh trước khi chụp hình xuất PDF
     const fileInput = document.getElementById('avatarUpload');
-    fileInput.style.display = 'none';
+    
+    // Ẩn nút chọn file ảnh đi để file PDF không bị lem luốc
+    if(fileInput) fileInput.style.display = 'none';
 
     const element = document.getElementById('formContent');
-    html2pdf().set({
-        margin: [10, 12, 10, 12],
-        filename: 'Form_Prudential_MOA.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).from(element).save().then(() => {
-        // Hiện lại nút input chọn ảnh sau khi xuất xong PDF
-        fileInput.style.display = 'block';
+    const options = {
+        margin:       [10, 12, 10, 12], // Căn lề: Trên, Phải, Dưới, Trái
+        filename:     '1.Form_ung_tuyen_vi_tri_MOA.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true }, // Tăng độ nét chữ lên gấp đôi
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // Khổ giấy A4 dọc hành chính
+    };
+
+    html2pdf().set(options).from(element).save().then(() => {
+        // Sau khi xuất file PDF thành công, hiển thị lại nút chọn ảnh bình thường
+        if(fileInput) fileInput.style.display = 'block';
     });
 }
 </script>
