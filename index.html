@@ -3,84 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Ứng Tuyển Prudential - Khổ A4 Chuẩn</title>
+    <title>Form Ứng Tuyển Prudential - Tối Ưu Mobile & In Ấn</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* --- ĐỊNH DẠNG CSS HIỂN THỊ MÀN HÌNH WEB --- */
+        /* --- ĐỊNH DẠNG CSS PHÙ HỢP CHO TRÌNH DUYỆT TRÊN ĐIỆN THOẠI (FRONTEND MOBILE-FIRST) --- */
         body { 
             font-family: Arial, sans-serif; 
-            margin: 20px; 
+            margin: 0; 
+            padding: 10px; 
             background-color: #f4f4f4; 
             color: #333; 
         }
         
-        /* Khung giấy A4 tiêu chuẩn kỹ thuật */
+        /* Mặc định trên điện thoại: Khung form co giãn tự động 100% để không bị tràn lề */
         .a4-page {
-            width: 794px; 
-            min-height: 1123px; 
+            width: 100%; 
+            max-width: 794px; /* Giới hạn tối đa bằng khổ A4 khi xem trên máy tính */
             margin: 0 auto;
             background: #fff;
-            padding: 40px 50px; 
+            padding: 20px 15px; 
             box-sizing: border-box;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
-        /* --- CSS TIÊU ĐỀ VÀ BẢO MẬT --- */
-        h2 { color: #d32f2f; text-align: center; margin: 0 0 5px 0; font-size: 20px; text-transform: uppercase; }
-        .header-table { width: 100%; margin-bottom: 20px; border: none !important; }
+        /* --- CSS TIÊU ĐỀ VÀ TIỂU MỤC --- */
+        h2 { color: #d32f2f; text-align: center; margin: 0 0 5px 0; font-size: 18px; text-transform: uppercase; }
+        .header-table { width: 100%; margin-bottom: 15px; border: none !important; }
         .header-table td { border: none !important; padding: 5px; }
-        .avatar-box { width: 113px; height: 151px; border: 1px solid #aaa; text-align: center; vertical-align: middle; font-size: 11px; color: #666; background-color: #fafafa; }
+        
+        /* Căn chỉnh lại khung ảnh chân dung gọn gàng trên mobile */
+        .avatar-container { text-align: center; margin-bottom: 15px; }
+        .avatar-box { width: 113px; height: 151px; border: 1px solid #aaa; text-align: center; vertical-align: middle; font-size: 11px; color: #666; background-color: #fafafa; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         
         .section-title { background-color: #d32f2f; color: white; padding: 6px 10px; margin-top: 20px; margin-bottom: 12px; font-weight: bold; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 12px; color: #222; }
         
-        /* Định dạng lại ô nhập liệu để không bị méo lệch */
         input[type="text"], input[type="date"], input[type="email"], select, textarea { 
             width: 100%; 
-            padding: 6px 8px; 
+            padding: 8px; 
             box-sizing: border-box; 
             border: 1px solid #bbb; 
-            border-radius: 3px; 
-            font-size: 13px; 
+            border-radius: 4px; 
+            font-size: 14px; /* Đặt cỡ chữ 14px trên mobile để iOS không tự động zoom màn hình khi gõ */
             font-family: Arial, sans-serif; 
         }
         
-        /* Bố cục hàng và cột chuẩn Flexbox */
-        .row { display: flex; gap: 15px; margin-bottom: 5px; }
-        .col { flex: 1; min-width: 0; } /* min-width giúp ô input không bị tràn khung */
+        /* Bố cục hàng cột linh hoạt: Tự động chuyển thành 1 cột dọc trên màn hình nhỏ */
+        .row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 5px; }
+        .col { flex: 1; min-width: 0; }
         
-        /* Cấu trúc bảng Kinh nghiệm */
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        /* Hỗ trợ cuộn ngang cho bảng Kinh nghiệm khi xem trên màn hình điện thoại bé */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; /* Đảm bảo bảng không bị bóp nghẹt chữ trên mobile */ }
         table, th, td { border: 1px solid #aaa; }
         th { background-color: #f5f5f5; padding: 8px; font-size: 11px; text-align: center; font-weight: bold; color: #111; }
         td { padding: 0; }
         td input { border: none !important; width: 100%; padding: 8px; box-sizing: border-box; font-size: 13px; }
-        td input:focus { outline: none; background-color: #fffde7; }
         
-        /* Nút xuất PDF */
-        .btn-pdf { background-color: #4CAF50; color: white; font-size: 15px; width: 794px; display: block; margin: 20px auto; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        /* Nút xuất PDF thiết kế to, dễ bấm bằng ngón tay trên điện thoại */
+        .btn-pdf { background-color: #4CAF50; color: white; font-size: 16px; width: 100%; max-width: 794px; display: block; margin: 20px auto; padding: 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; box-sizing: border-box; }
         .btn-pdf:hover { background-color: #45a049; }
         
-        /* --- ĐỊNH DẠNG XỬ LÝ IN ẤN --- */
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
-            body { background: none; margin: 0; padding: 0; }
-            .btn-pdf, #avatarUpload { display: none !important; }
-            .a4-page {
-                width: 210mm;
-                height: 297mm;
-                padding: 15mm 20mm 15mm 20mm;
-                box-shadow: none;
-                margin: 0;
-                page-break-after: avoid;
-                page-break-inside: avoid;
-            }
+        /* --- ĐỊNH DẠNG ĐẶC BIỆT KHI XEM TRÊN MÀN HÌNH LỚN (PC/LAPTOP) --- */
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            .a4-page { padding: 40px 50px; }
+            .row { flex-direction: row; gap: 15px; } /* Trở lại dạng hàng ngang đa cột trên PC */
+            h2 { font-size: 20px; }
+        }
+
+        /* --- CẤU HÌNH BẮT BUỘC ÉP KHỔ GIẤY KHI CHUYỂN ĐỔI SANG IN PDF --- */
+        .force-pdf-layout {
+            width: 794px !important; /* Ép cứng chiều rộng A4 */
+            padding: 15mm 20mm 15mm 20mm !important; /* Canh lề in chuẩn hành chính */
+            box-shadow: none !important;
+        }
+        .force-pdf-layout .row {
+            flex-direction: row !important; /* Ép các hàng luôn nằm ngang đa cột trong file PDF */
+            gap: 12px !important;
+        }
+        .force-pdf-layout table {
+            min-width: 100% !important; /* Loại bỏ thanh cuộn của bảng trong PDF */
         }
     </style>
 </head>
@@ -88,30 +94,29 @@
 
     <div class="a4-page" id="formContent">
         
-        <table class="header-table">
-            <tr>
-                <td style="width: 20%;">
-                    <div class="avatar-box" id="avatarPreview">Ảnh rõ mặt<br>(3x4 hoặc 4x6)</div>
-                    <input type="file" id="avatarUpload" accept="image/*" style="margin-top:5px; font-size:10px; width: 120px;" onchange="previewImage(this)">
-                </td>
-                <td style="vertical-align: middle; text-align: center; padding-left: 20px;">
-                    <h2>THÔNG TIN ỨNG TUYỂN</h2>
-                    <p style="font-weight: bold; margin: 4px 0; font-size: 13px; letter-spacing: 0.5px; uppercase">QUẢN LÝ TƯ VẤN VIÊN TRỰC TIẾP RED+</p>
-                    <p style="color: red; font-size: 11px; font-style: italic; margin: 0;">* Đây là các thông tin bắt buộc, vui lòng điền đầy đủ thông tin</p>
-                </td>
-            </tr>
-        </table>
+        <div class="avatar-container">
+            <div class="avatar-box" id="avatarPreview">Ảnh rõ mặt<br>(3x4 hoặc 4x6)</div>
+            <input type="file" id="avatarUpload" accept="image/*" style="margin-top:8px; font-size:12px; max-width: 150px;" onchange="previewImage(this)">
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h2>THÔNG TIN ỨNG TUYỂN</h2>
+            <p style="font-weight: bold; margin: 6px 0; font-size: 13px; letter-spacing: 0.5px;">QUẢN LÝ TƯ VẤN VIÊN TRỰC TIẾP RED+</p>
+            <p style="color: red; font-size: 11px; font-style: italic; margin: 0;">* Đây là các thông tin bắt buộc, vui lòng điền đầy đủ thông tin</p>
+        </div>
 
         <div class="form-group" style="border: 1px solid #aaa; padding: 10px; background-color: #fafafa;">
-            <label style="display: inline-block; margin-right: 20px; font-weight: bold;">* Khu vực ứng tuyển (vui lòng đánh dấu vào ô tương ứng):</label>
-            <input type="radio" name="khu_vuc" value="Hà Nội"> <span style="font-size:13px; margin-right: 15px;">Hà Nội</span>
-            <input type="radio" name="khu_vuc" value="Hồ Chí Minh"> <span style="font-size:13px;">Hồ Chí Minh</span>
+            <label style="margin-bottom: 6px; font-weight: bold;">* Khu vực ứng tuyển (vui lòng chọn):</label>
+            <input type="radio" name="khu_vuc" value="Hà Nội" style="width:auto;"> <span style="font-size:13px; margin-right: 20px;">Hà Nội</span>
+            <input type="radio" name="khu_vuc" value="Hồ Chí Minh" style="width:auto;"> <span style="font-size:13px;">Hồ Chí Minh</span>
         </div>
 
         <div class="section-title">* THÔNG TIN CÁ NHÂN</div>
         <div class="row">
             <div class="col form-group"><label>* Họ và tên:</label><input type="text"></div>
             <div class="col form-group"><label>* Nơi sinh:</label><input type="text"></div>
+        </div>
+        <div class="row">
             <div class="col form-group"><label>* Ngày tháng năm sinh:</label><input type="date"></div>
             <div class="col form-group">
                 <label>* Giới tính:</label>
@@ -125,6 +130,8 @@
         <div class="row">
             <div class="col form-group"><label>* Số CCCD:</label><input type="text"></div>
             <div class="col form-group"><label>* Nơi cấp:</label><input type="text"></div>
+        </div>
+        <div class="row">
             <div class="col form-group"><label>* Ngày cấp:</label><input type="date"></div>
             <div class="col form-group"><label>* Tình trạng hôn nhân:</label><input type="text"></div>
         </div>
@@ -134,8 +141,9 @@
             <div class="col form-group"><label>* Điện thoại di động:</label><input type="text"></div>
         </div>
 
+        <div class="section-title">* NGƯỜI LIÊN HỆ TRƯỜNG HỢP KHẨN CẤP</div>
         <div class="row">
-            <div class="col form-group"><label>* Người liên hệ trong trường hợp khẩn cấp:</label><input type="text"></div>
+            <div class="col form-group"><label>* Họ và tên người liên hệ:</label><input type="text"></div>
             <div class="col form-group"><label>* Điện thoại di động:</label><input type="text"></div>
             <div class="col form-group"><label>* Mối quan hệ:</label><input type="text"></div>
         </div>
@@ -145,48 +153,47 @@
         <div class="row">
             <div class="col form-group"><label>* Trình độ:</label><input type="text"></div>
             <div class="col form-group"><label>* Tên trường đào tạo:</label><input type="text"></div>
+        </div>
+        <div class="row">
             <div class="col form-group"><label>* Ngành học:</label><input type="text"></div>
-            <div class="col form-group"><label>* Thời gian:</label><input type="text"></div>
+            <div class="col form-group"><label>* Thời gian học:</label><input type="text"></div>
         </div>
 
         <div class="section-title">* KINH NGHIỆM LÀM VIỆC (VUI LÒNG ĐIỀN THÔNG TIN 3 CÔNG VIỆC GẦN NHẤT)</div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 15%;">* Thời gian</th>
-                    <th style="width: 25%;">* Tên công ty</th>
-                    <th style="width: 20%;">* Vị trí</th>
-                    <th style="width: 25%;">* Nhiệm vụ công việc</th>
-                    <th style="width: 15%;">* Thu nhập TB/tháng</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">* Thời gian</th>
+                        <th style="width: 25%;">* Tên công ty</th>
+                        <th style="width: 20%;">* Vị trí</th>
+                        <th style="width: 25%;">* Nhiệm vụ công việc</th>
+                        <th style="width: 15%;">* Thu nhập TB/tháng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                    <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                    <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                </tbody>
+            </table>
+        </div>
 
         <div style="margin-top: 20px; font-size: 11px; text-align: justify; line-height: 1.5; border-top: 1px dashed #aaa; padding-top: 12px;">
-            <input type="checkbox" checked disabled>
-            Tôi xin cam đoan những thông tin cung cấp trên đây là chính xác và đầy đủ. Bằng việc đánh dấu vào ô ngay cạnh bên, Tôi xác nhận đã đọc, hiểu và biết rõ <strong>Chính Sách Bảo Mật Thông Tin</strong> của Prudential được quy định tại website và đồng ý việc xử lý dữ liệu của Prudential cho mục đích thẩm định, đánh giá tư cách, điều kiện và tuyển dụng đại lý bảo hiểm như quy định chi tiết.
+            <input type="checkbox" checked disabled style="width:auto; display:inline;">
+            Tôi xin cam đoan những thông tin cung cấp trên đây là chính xác và đầy đủ. Bằng việc đánh dấu vào ô ngay cạnh bên, Tôi xác nhận đã đọc, hiểu và biết rõ <strong>Chính Sách Bảo Mật Thông Tin</strong> của Prudential được quy định tại website và đồng ý việc xử lý dữ liệu của Prudential cho mục đích tuyển dụng.
             
-            <table style="width: 100%; border: none !important; margin-top: 25px;">
-                <tr style="border: none !important;">
-                    <td style="border: none !important; width: 65%;"></td>
-                    <td style="border: none !important; text-align: center; font-weight: bold; font-size: 13px;">
-                        ỨNG VIÊN<br>
-                        <span style="font-weight: normal; font-style: italic; font-size: 11px;">(Ký và ghi rõ họ tên)</span>
-                    </td>
-                </tr>
-            </table>
+            <div style="text-align: center; font-weight: bold; font-size: 13px; margin-top: 30px; float: right; width: 200px;">
+                ỨNG VIÊN<br>
+                <span style="font-weight: normal; font-style: italic; font-size: 11px;">(Ký và ghi rõ họ tên)</span>
+            </div>
+            <div style="clear: both;"></div>
         </div>
     </div>
 
-    <button class="btn-pdf" onclick="exportPDF()">XUẤT FILE PDF THEO TIÊU CHUẨN IN A4</button>
+    <button type="button" class="btn-pdf" onclick="exportPDF()">XUẤT FILE PDF THEO TIÊU CHUẨN IN A4</button>
 
 <script>
-// Xử lý hiển thị ảnh chân dung trực tiếp khi chọn file
 function previewImage(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -197,22 +204,32 @@ function previewImage(input) {
     }
 }
 
-// Hàm xuất file PDF chuẩn kích thước
 function exportPDF() {
     const fileInput = document.getElementById('avatarUpload');
-    if(fileInput) fileInput.style.display = 'none'; // Ẩn nút chọn file ảnh để tránh lem bản in
-
     const element = document.getElementById('formContent');
+    
+    if(fileInput) fileInput.style.display = 'none'; // Ẩn nút chọn file ảnh
+
+    // THUẬT TOÁN ĐỔI GIAO DIỆN TẠM THỜI SANG CẤU TRÚC PHÙ HỢP VỚI IN ẤN A4 DỌC
+    element.classList.add('force-pdf-layout');
+
     const options = {
-        margin:       0, // Lề bằng 0 vì lề thực tế đã được ép bằng CSS Padding 20mm trong .a4-page
-        filename:     'Form_ung_tuyen_vi_tri_MOA_Clean.pdf',
+        margin:       0, 
+        filename:     '1.Form_ung_tuyen_MOA_Prudential.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, logging: false }, 
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(options).from(element).save().then(() => {
-        if(fileInput) fileInput.style.display = 'block'; // Hiện lại nút chọn file sau khi in xong
+    // Tiến hành chụp ảnh và tải xuống file PDF
+    html2pdf().set(options).from(element).save().then(function() {
+        // Sau khi xuất file thành công, gỡ bỏ cấu trúc in ấn để trả lại giao diện co giãn trên mobile như cũ
+        element.classList.remove('force-pdf-layout');
+        if(fileInput) fileInput.style.display = 'block';
+    }).catch(function(err) {
+        element.classList.remove('force-pdf-layout');
+        if(fileInput) fileInput.style.display = 'block';
+        console.error("Lỗi xuất PDF: ", err);
     });
 }
 </script>
