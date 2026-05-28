@@ -3,272 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Ứng Tuyển Prudential - Thuật Toán Map & Join</title>
+    <title>Form Ứng Tuyển Prudential - Nhập Tay 100%</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    
     <style>
+        /* --- ĐỊNH DẠNG CSS HIỂN THỊ TRÊN MÀN HÌNH WEB --- */
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 850px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { color: #d32f2f; text-align: center; margin-bottom: 5px; }
         
-        /* Hộp xử lý thuật toán bóc tách và đóng gói cho AI */
-        .ai-bridge-box { background-color: #f1f8e9; border: 2px dashed #7cb342; padding: 20px; margin-bottom: 25px; border-radius: 6px; }
-        .inner-box { background: #fff; padding: 10px; border: 1px solid #c5e1a5; margin-top: 10px; border-radius: 4px; }
+        /* Cấu trúc bao ngoài ép cứng kích thước khung giấy A4 tiêu chuẩn */
+        .a4-page {
+            width: 794px; /* Độ rộng chuẩn khổ A4 ở độ phân giải 96dpi */
+            min-height: 1123px; /* Chiều cao tối thiểu khổ A4 */
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px 50px; /* Căn lề trống an toàn bao quanh form trên màn hình */
+            box-sizing: border-box;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* --- CSS CHO CÁC PHẦN TỬ TRONG FORM --- */
+        h2 { color: #d32f2f; text-align: center; margin: 0 0 5px 0; font-size: 20px; }
+        .header-table { width: 100%; margin-bottom: 15px; border: none !important; }
+        .header-table td { border: none !important; padding: 5px; }
+        .avatar-box { width: 113px; height: 151px; border: 1px solid #aaa; text-align: center; vertical-align: middle; font-size: 11px; color: #666; background-color: #fafafa; }
         
-        .section-title { background-color: #d32f2f; color: white; padding: 6px 10px; margin-top: 25px; margin-bottom: 15px; font-weight: bold; text-transform: uppercase; font-size: 13px; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 12px; }
+        .section-title { background-color: #d32f2f; color: white; padding: 5px 8px; margin-top: 15px; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        .form-group { margin-bottom: 10px; }
+        label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 11px; color: #222; }
         
-        input[type="text"], input[type="date"], input[type="email"], select, textarea { width: 100%; padding: 6px 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
-        .row { display: flex; gap: 15px; }
+        input[type="text"], input[type="date"], input[type="email"], select, textarea { width: 100%; padding: 5px 7px; box-sizing: border-box; border: 1px solid #bbb; border-radius: 3px; font-size: 12px; font-family: Arial, sans-serif; }
+        .row { display: flex; gap: 12px; }
         .col { flex: 1; }
         
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        table, th, td { border: 1px solid #ccc; }
-        th { background-color: #f2f2f2; padding: 6px; font-size: 12px; text-align: center; font-weight: bold; }
+        /* Cấu trúc bảng nhập liệu */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+        table, th, td { border: 1px solid #aaa; }
+        th { background-color: #f5f5f5; padding: 6px; font-size: 11px; text-align: center; font-weight: bold; color: #111; }
         td { padding: 0; }
-        td input { border: none !important; width: 100%; padding: 8px; box-sizing: border-box; }
+        td input { border: none !important; width: 100%; padding: 6px; box-sizing: border-box; font-size: 12px; }
+        td input:focus { outline: none; background-color: #fffde7; }
         
-        .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-process { background-color: #7cb342; color: white; }
-        .btn-fill { background-color: #0288d1; color: white; }
-        .btn-pdf { background-color: #4CAF50; color: white; font-size: 16px; width: 100%; padding: 14px; margin-top: 25px; }
+        /* Nút xuất PDF cố định bên ngoài */
+        .btn-pdf { background-color: #4CAF50; color: white; font-size: 15px; width: 794px; display: block; margin: 20px auto; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-pdf:hover { background-color: #45a049; }
         
+        /* --- ĐỊNH DẠNG XỬ LÝ KHI IN CHUẨN KHỔ A4 DỌC --- */
         @media print {
-            .ai-bridge-box, .btn-pdf, #avatarUpload { display: none !important; }
-            body { background: none; margin: 0; }
-            .container { box-shadow: none; padding: 0; }
+            @page {
+                size: A4 portrait; /* Định dạng trang A4 dọc */
+                margin: 0; /* Xóa lề mặc định của trình duyệt để thư viện tự kiểm soát */
+            }
+            body { background: none; margin: 0; padding: 0; }
+            .btn-pdf, #avatarUpload { display: none !important; } /* Ẩn các nút điều khiển khi in */
+            .a4-page {
+                width: 210mm; /* Khớp chuẩn mm A4 */
+                height: 297mm;
+                padding: 15mm 20mm 15mm 20mm; /* Canh lề in chuẩn: Trên/Dưới 15mm, Trái/Phải 20mm */
+                box-shadow: none;
+                margin: 0;
+                page-break-after: avoid;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-
-    <div class="ai-bridge-box">
-        <h3 style="color: #558b2f; margin-top:0;">📦 Bộ Trích Xuất Dữ Liệu PDF & Đóng Gói Prompt AI</h3>
+    <div class="a4-page" id="formContent">
         
-        <div class="inner-box">
-            <label>* Bước 1: Chọn file PDF CV đầu vào để thực hiện thuật toán gom chữ:</label>
-            <input type="file" id="uploadCvPdf" accept=".pdf" style="margin-top: 5px;">
-            <button class="btn btn-process" style="margin-top: 10px;" onclick="runMapJoinAlgorithm()">Chạy Thuật Toán Map & Join</button>
-            <span id="algoStatus" style="margin-left: 10px; font-size: 13px; font-weight: bold;"></span>
+        <table class="header-table">
+            <tr>
+                <td style="width: 20%;">
+                    <div class="avatar-box" id="avatarPreview">Ảnh rõ mặt [cite: 2]<br>(3x4 hoặc 4x6) [cite: 2]</div>
+                    <input type="file" id="avatarUpload" accept="image/*" style="margin-top:5px; font-size:10px; width: 120px;" onchange="previewImage(this)">
+                </td>
+                <td style="vertical-align: middle; text-align: center; padding-left: 20px;">
+                    <h2>THÔNG TIN ỨNG TUYỂN [cite: 3]</h2>
+                    <p style="font-weight: bold; margin: 4px 0; font-size: 13px; letter-spacing: 0.5px;">QUẢN LÝ TƯ VẤN VIÊN TRỰC TIẾP RED+ [cite: 3]</p>
+                    <p style="color: red; font-size: 11px; font-style: italic; margin: 0;">* Đây là các thông tin bắt buộc, vui lòng điền đầy đủ thông tin [cite: 3]</p>
+                </td>
+            </tr>
+        </table>
+
+        <div class="form-group" style="border: 1px solid #aaa; padding: 8px; background-color: #fafafa;">
+            <label style="display: inline-block; margin-right: 20px;">* Khu vực ứng tuyển (vui lòng đánh dấu vào ô tương ứng): [cite: 4]</label>
+            <input type="radio" name="khu_vuc" value="Hà Nội"> <span style="font-size:12px;">Hà Nội</span> &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="radio" name="khu_vuc" value="Hồ Chí Minh"> <span style="font-size:12px;">Hồ Chí Minh</span> [cite: 4]
         </div>
 
-        <div class="inner-box" id="step2Box" style="display: none;">
-            <label style="color: #ef6c00;">* Bước 2: Copy toàn bộ nội dung trong ô dưới đây dán vào Google AI Studio (hoặc ChatGPT/Gemini):</label>
-            <textarea id="aiPackedPrompt" rows="5" style="margin-top:5px; background-color: #fff3e0;" readonly onclick="this.select()"></textarea>
-            <p style="font-size: 11px; margin: 3px 0; color: #666;">(Mẹo: Click chuột vào ô trên để tự động bôi đen toàn bộ rồi nhấn Ctrl+C)</p>
-        </div>
-
-        <div class="inner-box">
-            <label>* Bước 3: Dán chuỗi kết quả thu được từ AI vào đây để tự động điền Form:</label>
-            <textarea id="aiJsonOutput" rows="3" style="margin-top:5px;" placeholder="Dán đoạn mã kết quả mà AI vừa tạo ra vào đây..."></textarea>
-            <button class="btn btn-fill" style="margin-top: 10px;" onclick="autoFillFormFromOutput()">Kích Hoạt Tự Động Điền Form</button>
-        </div>
-    </div>
-
-    <div id="formContent">
-        <h2 style="margin-top: 0;">THÔNG TIN ỨNG TUYỂN</h2>
-        <p style="text-align: center; font-weight: bold; margin-top: 0; font-size: 14px;">QUẢN LÝ TƯ VẤN VIÊN TRỰC TIẾP RED+</p>
-
-        <div class="form-group" style="border: 1px solid #ccc; padding: 10px; background-color: #fafafa; margin-top: 15px;">
-            <label>* Khu vực ứng tuyển:</label>
-            <input type="radio" name="khu_vuc" id="kv_hn" value="Hà Nội"> Hà Nội &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="radio" name="khu_vuc" id="kv_hcm" value="Hồ Chí Minh"> Hồ Chí Minh
-        </div>
-
-        <div class="section-title">* THÔNG TIN CÁ NHÂN</div>
+        <div class="section-title">* THÔNG TIN CÁ NHÂN [cite: 6]</div>
         <div class="row">
-            <div class="col form-group"><label>* Họ và tên:</label><input type="text" id="fullname"></div>
-            <div class="col form-group"><label>* Nơi sinh:</label><input type="text" id="pob"></div>
-            <div class="col form-group"><label>* Ngày tháng năm sinh:</label><input type="date" id="dob"></div>
-            <div class="col form-group"><label>* Giới tính:</label><select id="gender"><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select></div>
+            <div class="col form-group"><label>* Họ và tên: [cite: 7]</label><input type="text"></div>
+            <div class="col form-group"><label>* Nơi sinh: [cite: 8]</label><input type="text"></div>
+            <div class="col form-group"><label>* Ngày tháng năm sinh: [cite: 9]</label><input type="date"></div>
+            <div class="col form-group"><label>* Giới tính: [cite: 10]</label><select><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select></div>
         </div>
         
-        <div class="form-group"><label>* Nơi đăng ký hộ khẩu thường trú:</label><input type="text" id="hktt"></div>
-        <div class="form-group"><label>* Nơi ở hiện nay:</label><input type="text" id="address"></div>
+        <div class="form-group"><label>* Nơi đăng ký hộ khẩu thường trú: [cite: 11]</label><input type="text"></div>
+        <div class="form-group"><label>* Nơi ở hiện nay: [cite: 12]</label><input type="text"></div>
 
         <div class="row">
-            <div class="col form-group"><label>* Số CCCD:</label><input type="text" id="cccd"></div>
-            <div class="col form-group"><label>* Nơi cấp:</label><input type="text" id="cccd_place"></div>
-            <div class="col form-group"><label>* Ngày cấp:</label><input type="date" id="cccd_date"></div>
-            <div class="col form-group"><label>* Tình trạng hôn nhân:</label><input type="text" id="marital_status"></div>
+            <div class="col form-group"><label>* Số CCCD: [cite: 13]</label><input type="text"></div>
+            <div class="col form-group"><label>* Nơi cấp: [cite: 14]</label><input type="text"></div>
+            <div class="col form-group"><label>* Ngày cấp: [cite: 15]</label><input type="date"></div>
+            <div class="col form-group"><label>* Tình trạng hôn nhân: [cite: 16]</label><input type="text"></div>
         </div>
 
         <div class="row">
-            <div class="col form-group"><label>* Email:</label><input type="email" id="email"></div>
-            <div class="col form-group"><label>* Điện thoại di động:</label><input type="text" id="phone"></div>
+            <div class="col form-group"><label>* Email: [cite: 17]</label><input type="email"></div>
+            <div class="col form-group"><label>* Điện thoại di động: [cite: 21]</label><input type="text"></div>
         </div>
 
-        <div class="section-title">* THÔNG TIN HỌC VẤN (CẤP BẬC CAO NHẤT)</div>
         <div class="row">
-            <div class="col form-group"><label>* Trình độ:</label><input type="text" id="edu_level"></div>
-            <div class="col form-group"><label>* Tên trường đào tạo:</label><input type="text" id="edu_school"></div>
-            <div class="col form-group"><label>* Ngành học:</label><input type="text" id="edu_major"></div>
-            <div class="col form-group"><label>* Thời gian:</label><input type="text" id="edu_time"></div>
+            <div class="col form-group"><label>* Người liên hệ trong trường hợp khẩn cấp: [cite: 18]</label><input type="text"></div>
+            <div class="col form-group"><label>* Điện thoại di động: [cite: 20]</label><input type="text"></div>
+            <div class="col form-group"><label>* Mối quan hệ: [cite: 24]</label><input type="text"></div>
+        </div>
+        <div class="form-group"><label>* Địa chỉ liên lạc: [cite: 19]</label><input type="text"></div>
+
+        <div class="section-title">* THÔNG TIN HỌC VẤN (VUI LÒNG ĐIỀN CẤP BẬC CAO NHẤT) [cite: 22]</div>
+        <div class="row">
+            <div class="col form-group"><label>* Trình độ: [cite: 23]</label><input type="text"></div>
+            <div class="col form-group"><label>* Tên trường đào tạo: [cite: 25]</label><input type="text"></div>
+            <div class="col form-group"><label>* Ngành học: [cite: 26]</label><input type="text"></div>
+            <div class="col form-group"><label>* Thời gian: [cite: 27]</label><input type="text"></div>
         </div>
 
-        <div class="section-title">* KINH NGHIỆM LÀM VIỆC (VUI LÒNG ĐIỀN THÔNG TIN 3 CÔNG VIỆC GẦN NHẤT)</div>
+        <div class="section-title">* KINH NGHIỆM LÀM VIỆC (VUI LÒNG ĐIỀN THÔNG TIN 3 CÔNG VIỆC GẦN NHẤT) [cite: 28]</div>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 15%;">Thời gian</th>
-                    <th style="width: 25%;">Tên công ty</th>
-                    <th style="width: 20%;">Vị trí</th>
-                    <th style="width: 40%;">Nhiệm vụ công việc</th>
+                    <th style="width: 15%;">* Thời gian [cite: 29]</th>
+                    <th style="width: 25%;">* Tên công ty [cite: 29]</th>
+                    <th style="width: 20%;">* Vị trí [cite: 29]</th>
+                    <th style="width: 25%;">* Nhiệm vụ công việc [cite: 29]</th>
+                    <th style="width: 15%;">* Thu nhập TB/tháng [cite: 29]</th>
                 </tr>
             </thead>
             <tbody>
-                <tr><td><input type="text" id="exp_time_1"></td><td><input type="text" id="exp_company_1"></td><td><input type="text" id="exp_position_1"></td><td><input type="text" id="exp_task_1"></td></tr>
-                <tr><td><input type="text" id="exp_time_2"></td><td><input type="text" id="exp_company_2"></td><td><input type="text" id="exp_position_2"></td><td><input type="text" id="exp_task_2"></td></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
             </tbody>
         </table>
+
+        <div style="margin-top: 20px; font-size: 10.5px; text-align: justify; line-height: 1.4; border-top: 1px dashed #aaa; padding-top: 10px;">
+            <input type="checkbox" checked disabled>
+            Tôi xin cam đoan những thông tin cung cấp trên đây là chính xác và đầy đủ. Bằng việc đánh dấu vào ô ngay cạnh bên, Tôi xác nhận đã đọc, hiểu và biết rõ <strong>Chính Sách Bảo Mật Thông Tin</strong> của Prudential được quy định tại website và đồng ý việc xử lý dữ liệu của Prudential cho mục đích thẩm định, đánh giá tư cách, điều kiện và tuyển dụng đại lý bảo hiểm như quy định chi tiết.
+            
+            <table style="width: 100%; border: none !important; margin-top: 25px;">
+                <tr style="border: none !important;">
+                    <td style="border: none !important; width: 65%;"></td>
+                    <td style="border: none !important; text-align: center; font-weight: bold; font-size: 12px; line-height: 1.5;">
+                        ỨNG VIÊN<br>
+                        <span style="font-weight: normal; font-style: italic; font-size: 11px;">(Ký và ghi rõ họ tên)</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 
-    <button class="btn btn-pdf" onclick="exportPDF()">XUẤT FILE PDF CHI TIẾT</button>
-</div>
+    <button class="btn-pdf" onclick="exportPDF()">XUẤT FILE PDF THEO TIÊU CHUẨN IN A4</button>
 
 <script>
-// Khởi tạo worker cấu hình thư viện xử lý PDF đầu vào 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-
-// 1. THUẬT TOÁN GOM CHỮ (MAP & JOIN) TỪ FILE PDF ĐẦU VÀO 
-async function runMapJoinAlgorithm() {
-    const fileInput = document.getElementById('uploadCvPdf');
-    const status = document.getElementById('algoStatus');
-    
-    if (fileInput.files.length === 0) return alert("Vui lòng chọn file PDF CV trước!");
-    
-    status.style.color = "#ef6c00";
-    status.innerText = "⏳ Đang chạy thuật toán bóc tách dữ liệu...";
-
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-
-    reader.onload = async function() {
-        try {
-            const typedarray = new Uint8Array(this.result);
-            const pdf = await pdfjsLib.getDocument(typedarray).promise; [cite: 1]
-            let rawTextResult = "";
-
-            // Duyệt vòng lặp qua toàn bộ các trang của file PDF 
-            for (let i = 1; i <= pdf.numPages; i++) { [cite: 1]
-                const page = await pdf.getPage(i); [cite: 1]
-                const textContent = await page.getTextContent(); [cite: 1]
-                
-                // THUẬT TOÁN MAP & JOIN CỐT LÕI: 
-                // Biến đổi (map) mảng đối tượng ký tự thành mảng chuỗi chữ thuần 
-                // Sau đó nối liền (join) chúng lại với nhau thành một đoạn văn bản thô hoàn chỉnh 
-                const pageText = textContent.items.map(item => item.str).join(" "); [cite: 1]
-                rawTextResult += pageText + "\n";
-            }
-
-            // Đóng gói đoạn văn bản đã Gom chữ vào cấu trúc Prompt bảo mật
-            packPromptForAI(rawTextResult);
-            
-            status.style.color = "#28a745";
-            status.innerText = "✅ Gom chữ thành công! Hãy làm tiếp Bước 2.";
-            document.getElementById('step2Box').style.display = "block";
-
-        } catch (error) {
-            console.error(error);
-            status.style.color = "#d32f2f";
-            status.innerText = "❌ Lỗi thực thi cấu trúc file!";
+// Xử lý hiển thị ảnh chân dung thời gian thực khi chọn tệp từ máy tính
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('avatarPreview').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
         }
-    };
-    reader.readAsArrayBuffer(file);
-}
-
-// 2. HÀM ĐÓNG GÓI TEXT ĐỂ NGƯỜI DÙNG COPY SANG AI MÀ KHÔNG CẦN KEY API
-function packPromptForAI(extractedText) {
-    const aiBox = document.getElementById('aiPackedPrompt');
-    
-    const basePrompt = `Hãy đóng vai trò là chuyên gia bóc tách dữ liệu. Đọc đoạn văn bản CV thô của ứng viên được cung cấp ở cuối câu lệnh này và chuyển đổi chính xác các thông tin thành một cấu trúc chuỗi văn bản phân tách bằng dấu gạch đứng theo đúng định dạng sau đây. Không viết thêm bất kỳ chữ giải thích nào khác ngoài cấu trúc kết quả:
-
-KhuVuc|HoTen|NgaySinh|NoiSinh|GioiTinh|HộKhẩu|NoiO|Cccd|NgayCap|NoiCap|HonNhan|Email|DienThoai|TrinhDo|TruongHoc|NganhHoc|ThoiGianHoc|KinhNghiem1|KinhNghiem2
-
-Lưu ý quy tắc dữ liệu:
-- KinhNghiem1 định dạng là: Thời gian - Tên công ty - Vị trí - Nhiệm vụ công việc ngắn gọn.
-- Nếu thông tin nào không tìm thấy trong văn bản, hãy để trống ô đó (nhưng vẫn giữ nguyên dấu gạch đứng |).
-
-VĂN BẢN CV ỨNG VIÊN ĐÃ TRÍCH XUẤT:
-`;
-
-    aiBox.value = basePrompt + "\n" + extractedText;
-}
-
-// 3. HÀM TỰ ĐỘNG ĐỌC KẾT QUẢ TỪ AI VÀ ĐỔ VÀO FORM HTML
-function autoFillFormFromOutput() {
-    const aiOutput = document.getElementById('aiJsonOutput').value.trim();
-    if(!aiOutput) return alert("Vui lòng dán chuỗi kết quả từ AI vào ô!");
-
-    try {
-        // Cắt chuỗi dữ liệu dựa trên dấu gạch đứng | mà AI trả về
-        const parts = aiOutput.split('|').map(p => p.trim());
-
-        if(parts.length < 5) {
-            throw new Error("Định dạng dữ liệu copy không tương thích!");
-        }
-
-        // Thực hiện ánh xạ dữ liệu vào các ô Form ứng tuyển
-        if(parts[0] === "Hà Nội") document.getElementById('kv_hn').checked = true;
-        if(parts[0] === "Hồ Chí Minh") document.getElementById('kv_hcm').checked = true;
-
-        document.getElementById('fullname').value = parts[1] || '';
-        document.getElementById('dob').value = parts[2] || '';
-        document.getElementById('pob').value = parts[3] || '';
-        document.getElementById('gender').value = parts[4] || 'Nam';
-        document.getElementById('hktt').value = parts[5] || '';
-        document.getElementById('address').value = parts[6] || '';
-        document.getElementById('cccd').value = parts[7] || '';
-        document.getElementById('cccd_date').value = parts[8] || '';
-        document.getElementById('cccd_place').value = parts[9] || '';
-        document.getElementById('marital_status').value = parts[10] || '';
-        document.getElementById('email').value = parts[11] || '';
-        document.getElementById('phone').value = parts[12] || '';
-        document.getElementById('edu_level').value = parts[13] || '';
-        document.getElementById('edu_school').value = parts[14] || '';
-        document.getElementById('edu_major').value = parts[15] || '';
-        document.getElementById('edu_time').value = parts[16] || '';
-
-        // Tách nhỏ chuỗi kinh nghiệm công việc 1
-        if(parts[17]) {
-            const exp1 = parts[17].split('-');
-            document.getElementById('exp_time_1').value = exp1[0] ? exp1[0].trim() : '';
-            document.getElementById('exp_company_1').value = exp1[1] ? exp1[1].trim() : '';
-            document.getElementById('exp_position_1').value = exp1[2] ? exp1[2].trim() : '';
-            document.getElementById('exp_task_1').value = exp1[3] ? exp1[3].trim() : '';
-        }
-
-        // Tách nhỏ chuỗi kinh nghiệm công việc 2
-        if(parts[18]) {
-            const exp2 = parts[18].split('-');
-            document.getElementById('exp_time_2').value = exp2[0] ? exp2[0].trim() : '';
-            document.getElementById('exp_company_2').value = exp2[1] ? exp2[1].trim() : '';
-            document.getElementById('exp_position_2').value = exp2[2] ? exp2[2].trim() : '';
-            document.getElementById('exp_task_2').value = exp2[3] ? exp2[3].trim() : '';
-        }
-
-        alert("🎉 Đã đồng bộ và điền Form thành công!");
-    } catch (e) {
-        alert("❌ Lỗi cấu trúc dữ liệu dán vào! Hãy đảm bảo bạn copy đúng chuỗi phân tách bằng dấu | từ AI.");
+        reader.readAsDataURL(input.files[0]);
     }
 }
 
-// 4. HÀM XUẤT FILE PDF
+// Hàm xuất bản in PDF sạch, không bị lem các nút chức năng chọn tệp
 function exportPDF() {
+    const fileInput = document.getElementById('avatarUpload');
+    if(fileInput) fileInput.style.display = 'none'; // Ẩn tạm thời nút chọn file ảnh
+
     const element = document.getElementById('formContent');
-    html2pdf().set({
-        margin: [10, 12, 10, 12],
-        filename: 'Form_Ung_Tuyen_Prudential.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).from(element).save();
+    const options = {
+        margin:       0, // Đặt lề html2pdf về 0 vì lề thực tế đã căn bằng CSS Padding của .a4-page nhằm tránh lỗi vỡ dòng
+        filename:     '1.Form_ung_tuyen_vi_tri_MOA_Final.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false }, 
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // Cố định khổ giấy in A4 dọc hành chính
+    };
+
+    html2pdf().set(options).from(element).save().then(() => {
+        if(fileInput) fileInput.style.display = 'block'; // Hiển thị lại nút chọn ảnh sau khi xuất file hoàn tất
+    });
 }
 </script>
 </body>
